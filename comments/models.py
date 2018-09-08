@@ -46,8 +46,8 @@ class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='comments', on_delete=models.CASCADE)
     parent = models.ForeignKey('self', related_name='children', on_delete=models.CASCADE, blank=True, null=True)
     text = models.CharField(max_length=500)
-    entity_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    entity_id = models.PositiveIntegerField()
+    entity_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, blank=True, null=True)
+    entity_id = models.PositiveIntegerField(blank=True, null=True)
     entity = GenericForeignKey('entity_type', 'entity_id')
 
     objects = CommentManager()
