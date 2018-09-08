@@ -1,0 +1,10 @@
+*.pyc
+~*
+.idea
+.DS_Store
+.vscode
+/venv
+0docs
+.env
+.coverage
+htmlcov
