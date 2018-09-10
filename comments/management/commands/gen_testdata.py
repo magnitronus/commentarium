@@ -32,6 +32,13 @@ class Command(BaseCommand):
         )
 
         parser.add_argument(
+            '--roots_count',
+            type=int,
+            dest='roots_count',
+            help='Needed root nodes count. Default is int(count // depth // 2)',
+        )
+
+        parser.add_argument(
             '--cleanup',
             action='store_true',
             help='Cleanup database before generate data'
@@ -50,16 +57,14 @@ class Command(BaseCommand):
             Comment.objects.all().delete()
         users = [UserFactory() for _ in range(10)]
         entities = users + [PostFactory() for _ in range(10)]
-        roots_count = int(count // depth // 2)
+        roots_count = options.get('roots_count', int(count // depth // 2))
         self.stdout.write('Create tree')
         with tqdm(total=roots_count*depth) as pbar:
             for root_idx in range(roots_count):
                 parent = None
                 for depth_idx in range(depth):
-                    cf_kwargs = dict(parent=parent, user=random.choice(users))
-                    if parent is None:
-                        cf_kwargs['entity'] = random.choice(entities)
-                    parent = CommentFactory.create(**cf_kwargs)
+                    parent = CommentFactory.create(
+                        parent=parent, user=random.choice(users), entity=random.choice(entities))
                     pbar.update()
         remain_count = count - roots_count*depth
         remain_comments = []

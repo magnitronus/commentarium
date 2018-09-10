@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Commentarium</title>
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+  <script>
+    $(document).ready(function () {
+          $.ajax('/api/posts/212/comments_tree/').done(function (resp) {
+              var idToNodeMap = resp.reduce(function(map, node) {
+                  map[node.id] = node;
+                  return map;
+              }, {});
+              console.log(idToNodeMap)
+          })
+        }
+    )
+  </script>
+</head>
+<body>
+
+</body>
+</html>

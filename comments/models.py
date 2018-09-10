@@ -17,16 +17,16 @@ class CommentQuerySet(models.QuerySet):
         raw_sql = ("""WITH RECURSIVE 
             starting (id, parent_id, path) AS
             (
-              SELECT t.id, t.parent_id, CAST(t.id AS text) AS path
+              SELECT t.id, t.parent_id, CONCAT(CAST(t.parent_id AS text), '/', CAST(t.id AS text)) AS path
               FROM {0} AS t
               WHERE t.id = ANY({1})
             ),
             descendants (id, parent_id, path) AS
             (
-              SELECT s.id, s.parent_id, CAST(s.id AS text) AS path
+              SELECT s.id, s.parent_id, CONCAT(CAST(s.parent_id AS text), '/', CAST(s.id AS text)) AS path
               FROM starting AS s 
               UNION ALL
-              SELECT t.id, t.parent_id, concat(d.path, '|', CAST(t.id AS text)) as path
+              SELECT t.id, t.parent_id, CONCAT(d.path, '/', CAST(t.id AS text)) as path
               FROM {0} AS t JOIN descendants AS d ON t.parent_id = d.id
             ) SELECT t.*, d.path 
             FROM {0} AS t 
@@ -44,6 +44,7 @@ class CommentManager(models.Manager):
 
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='comments', on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
     parent = models.ForeignKey('self', related_name='children', on_delete=models.CASCADE, blank=True, null=True)
     text = models.CharField(max_length=500)
     entity_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, blank=True, null=True)
